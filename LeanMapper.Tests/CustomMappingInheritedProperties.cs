@@ -21,7 +21,7 @@ namespace LeanMapper.Tests
             LeanMapper.Config<SimplePocoBase, IDto>()
                 .MapProperty(d => d.Timestamp, p => DateTime.Parse(p.Timestamp));
 
-            var dto = LeanMapper.Map<SimpleDto>(poco);
+            var dto = LeanMapper.Map<SimplePoco, SimpleDto>(poco);
 
             Assert.AreEqual(poco.Id, dto.Id);
             Assert.AreEqual(poco.Name, dto.Name);

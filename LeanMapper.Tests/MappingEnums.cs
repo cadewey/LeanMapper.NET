@@ -46,7 +46,7 @@ namespace LeanMapper.Tests
         {
             var employee = new Employee { Id = Guid.NewGuid(), Name = "Timuçin", Surname = "KIVANÇ", Department = (int)Departments.IT  };
 
-            var dto = LeanMapper.Map<EmployeeDTO>(employee);
+            var dto = LeanMapper.Map<Employee, EmployeeDTO>(employee);
 
             Assert.IsNotNull(dto);
           
@@ -60,7 +60,7 @@ namespace LeanMapper.Tests
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT.ToString() };
 
-            var dto = LeanMapper.Map<EmployeeDTO>(employee);
+            var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
             Assert.IsNotNull(dto);
 
@@ -74,7 +74,7 @@ namespace LeanMapper.Tests
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = null };
 
-            var dto = LeanMapper.Map<EmployeeDTO>(employee);
+            var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
             Assert.IsNotNull(dto);
 
@@ -88,7 +88,7 @@ namespace LeanMapper.Tests
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = "" };
 
-            var dto = LeanMapper.Map<EmployeeDTO> (employee);
+            var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
             Assert.IsNotNull(dto);
 
@@ -102,7 +102,7 @@ namespace LeanMapper.Tests
         {
             var employeeDto = new EmployeeDTO { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT };
 
-            var poco = LeanMapper.Map<EmployeeWithStringEnum>(employeeDto);
+            var poco = LeanMapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
 
             Assert.IsNotNull(poco);
 
@@ -110,32 +110,6 @@ namespace LeanMapper.Tests
             Assert.AreEqual(poco.Name, employeeDto.Name);
             Assert.AreEqual(poco.Department, employeeDto.Department.ToString());
         }
-
-        /*
-        [TestMethod]
-        public void Flag_Enum_Is_Supported()
-        {
-            Assert_Flag_Enum(0, "Zero");
-            Assert_Flag_Enum(1, "1");
-            Assert_Flag_Enum(2, "Two");
-            Assert_Flag_Enum(3, "3");
-            Assert_Flag_Enum(4, "Four");
-            Assert_Flag_Enum(5, "5");
-            Assert_Flag_Enum(6, "Six");
-            Assert_Flag_Enum(7, "7");
-            Assert_Flag_Enum(8, "Eight");
-            Assert_Flag_Enum(9, "9");
-            Assert_Flag_Enum(10, "Two, Eight");
-        }
-
-        private static void Assert_Flag_Enum(int value, string result)
-        {
-            var e = (Flags) value;
-            var str = TypeAdapter.Adapt<Flags, string>(e);
-            str.ShouldBe(result);
-            var e2 = TypeAdapter.Adapt<string, Flags>(str);
-            e2.ShouldBe(e);
-        }*/
 
         [TestMethod]
         public void MapEnumToStringSpeedTest()
@@ -145,7 +119,7 @@ namespace LeanMapper.Tests
             var timer = Stopwatch.StartNew();
             for (int i = 0; i < 100000; i++)
             {
-                var poco = LeanMapper.Map<EmployeeWithStringEnum>(employeeDto);
+                var poco = LeanMapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
             }
             timer.Stop();
             Console.WriteLine("Enum to string Elapsed time ms: " + timer.ElapsedMilliseconds);

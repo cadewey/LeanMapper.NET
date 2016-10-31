@@ -49,7 +49,7 @@ namespace LeanMapper.Tests
         [TestMethod]
         public void ConvertPrimitiveEntityToDto()
         {
-            var dto = LeanMapper.Map<CustomerDTO>(GetCustomer());
+            var dto = LeanMapper.Map<Customer, CustomerDTO>(GetCustomer());
             
             Assert.IsNotNull(dto);
             Assert.IsTrue(dto.Id == 1 && 

@@ -37,6 +37,20 @@ namespace LeanMapper.Tests
         public DateTime BirthDate { get; set; }
     }
 
+    public class ConfigE
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<string> Values { get; set; }
+    }
+
+    public class ConfigF
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<string> Values { get; set; }
+    }
+
     public class Source
     {
         public int Level { get; set; }
@@ -86,7 +100,7 @@ namespace LeanMapper.Tests
             LeanMapper.Config<ConfigA, ConfigB>()
                 .Ignore(dest => dest.Id);
 
-            var objB = LeanMapper.Map<ConfigB>(objA);
+            var objB = LeanMapper.Map<ConfigA, ConfigB>(objA);
 
             Assert.IsNotNull(objB);
             Assert.IsTrue(objB.Id == 0 && objB.FullName == null && objB.BirthDate == currentDate);
@@ -109,7 +123,7 @@ namespace LeanMapper.Tests
                 .Ignore(dest => dest.Name)
                 .Ignore(dest => dest.Surname);
 
-            var objC = LeanMapper.Map<ConfigC>(objA);
+            var objC = LeanMapper.Map<ConfigA, ConfigC>(objA);
 
             Assert.IsNotNull(objC);
             Assert.IsTrue(objC.Id == objA.Id && objC.BirthDate == currentDate);
@@ -130,13 +144,64 @@ namespace LeanMapper.Tests
             };
 
             LeanMapper.Config<ConfigC, ConfigD>()
-                //.Map(dest => dest.FullName, (src) => string.Concat(src.Name, " ", src.Surname));
                 .MapProperty(dest => dest.FullName, src => string.Concat(src.Name, " ", src.Surname));
 
-            var objD = LeanMapper.Map<ConfigD>(objC);
+            var objD = LeanMapper.Map<ConfigC, ConfigD>(objC);
 
             Assert.IsNotNull(objD);
             Assert.IsTrue(objD.Id == 1 && objD.FullName == "Timuçin KIVANÇ" && objD.BirthDate == currentDate);
+        }
+
+        [TestMethod]
+        public void AfterMapping_SimpleType()
+        {
+            var currentDate = DateTime.Now;
+
+            var objC = new ConfigC()
+            {
+                BirthDate = currentDate,
+                Id = 1,
+                Name = "Timuçin",
+                Surname = "KIVANÇ"
+            };
+
+            LeanMapper.Config<ConfigC, ConfigD>()
+                .AfterMapping((s, d) => d.Id += 1000);
+
+            var objD = LeanMapper.Map<ConfigC, ConfigD>(objC);
+
+            Assert.IsNotNull(objD);
+            Assert.AreEqual(1001, objD.Id);
+        }
+
+        [TestMethod]
+        public void AfterMapping_CollectionType()
+        {
+            var objE = new ConfigE
+            {
+                Id = 42,
+                Name = "Test Object",
+                Values = new List<string> { "First", "Second", "Third" }
+            };
+
+            LeanMapper.Config<ConfigE, ConfigF>()
+                .Ignore(o => o.Values)
+                .AfterMapping((s, d) =>
+                {
+                    d.Values = new List<string>();
+
+                    foreach (var v in s.Values)
+                    {
+                        d.Values.Add(v + " Value");
+                    }
+                });
+
+            var objF = LeanMapper.Map<ConfigE, ConfigF>(objE);
+
+            Assert.IsNotNull(objF);
+            Assert.AreEqual(objE.Id, objF.Id);
+            Assert.AreEqual(objE.Name, objF.Name);
+            CollectionAssert.AreEqual(objF.Values, new []{ "First Value", "Second Value", "Third Value"});
         }
 
 
@@ -147,7 +212,7 @@ namespace LeanMapper.Tests
             obj.Name = "Tim";
             obj.Child = new TestNewInstanceC() { Name = "Kıvanç" };
 
-            var newObj = LeanMapper.Map<TestNewInstanceB>(obj);
+            var newObj = LeanMapper.Map<TestNewInstanceA, TestNewInstanceB>(obj);
 
             Assert.IsTrue(newObj.Name == "Tim");
             Assert.IsTrue(obj.Child.Name == newObj.Child.Name);
@@ -156,30 +221,6 @@ namespace LeanMapper.Tests
 
             Assert.IsTrue(obj.Child.Name != newObj.Child.Name);
         }
-
-        /*
-         * TODO: Do we have any use for shallow copying in the mapper?
-        [TestMethod]
-        public void NewInstanceConfigurationTest()
-        {
-            TestNewInstanceD obj = new TestNewInstanceD();
-            obj.Name = "Tim";
-            obj.Child = new TestNewInstanceF() { Name = "Kıvanç" };
-
-            TypeAdapterConfig<TestNewInstanceD, TestNewInstanceE>
-                .NewConfig()
-                .ShallowCopyForSameType(true);
-
-            var newObj2 = TypeAdapter.Adapt<TestNewInstanceD, TestNewInstanceE>(obj);
-
-            Assert.IsTrue(newObj2.Name == "Tim");
-            Assert.IsTrue(obj.Child.Name == newObj2.Child.Name);
-
-            obj.Child.Name = "Antalya";
-
-            Assert.IsTrue(newObj2.Child.Name == "Antalya");
-        }
-        */
 
         #region Data
 

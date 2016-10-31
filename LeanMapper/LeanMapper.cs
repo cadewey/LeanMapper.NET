@@ -48,18 +48,33 @@ namespace LeanMapper
             var configs = new Dictionary<Type, MappingConfigBase>();
 
             if (srcType != null && _mappingConfigs.ContainsKey(srcType))
-                configs = _mappingConfigs[srcType].Where(d => d.Key.IsAssignableFrom(destType)).ToDictionary(k => k.Key, e => e.Value);
+                configs = _mappingConfigs[srcType].Where(d => d.Key.IsAssignableFrom(destType) && d.Key != destType)
+                    .ToDictionary(k => k.Key, e => e.Value);
 
             return configs;
         }
 
-        public static TOut Map<TOut>(object inObj)
+        private static List<MappingConfigBase> FindAndMergeConfigs(Type srcType, Type destType)
+        {
+            var configs = new List<MappingConfigBase>();
+            var exactTypeConfig = FindConfig(srcType, destType);
+            var baseConfigs = FindBaseConfigs(srcType, destType).Values;
+
+            if (exactTypeConfig != null)
+                configs.Add(exactTypeConfig);
+
+            configs.AddRange(baseConfigs);
+
+            return configs;
+        }
+
+        public static TOut Map<TIn, TOut>(TIn inObj)
             where TOut : class, new()
         {
             if (inObj == null)
                 return null;
 
-            var inType = inObj.GetType();
+            var inType = typeof(TIn);
             var outType = typeof(TOut);
 
             if (!_mapperMethodCache.ContainsKey(inType))
@@ -68,13 +83,17 @@ namespace LeanMapper
             if (!_mapperMethodCache[inType].ContainsKey(outType))
                 BuildExpressionTreeForMapping(inType, outType);
 
-            return (TOut)_mapperMethodCache[inType][outType](inObj);
+            var outObj = (TOut)_mapperMethodCache[inType][outType](inObj);
+            var afterMapActions = FindAndMergeConfigs(inType, outType).Cast<MappingConfig<TIn, TOut>>().SelectMany(c => c.AfterMappingActions).ToList();
+            afterMapActions.ForEach(a => a(inObj, outObj));
+
+            return outObj;
         }
 
-        public static IEnumerable<TOut> MapCollection<TOut>(IEnumerable<object> inCollection)
+        public static IEnumerable<TOut> MapCollection<TIn, TOut>(IEnumerable<TIn> inCollection)
             where TOut : class, new()
         {
-            return inCollection?.ToList().Select(Map<TOut>) ?? new List<TOut>();
+            return inCollection?.ToList().Select(Map<TIn, TOut>) ?? new List<TOut>();
         }
 
         private static Type DetermineUnderlyingType(Type t)

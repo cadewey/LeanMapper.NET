@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -6,6 +7,13 @@ namespace LeanMapper
 {
     public sealed class MappingConfig<TSrc, TDest> : MappingConfigBase
     {
+        internal readonly List<Action<TSrc, TDest>> AfterMappingActions;
+
+        public MappingConfig()
+        {
+            AfterMappingActions = new List<Action<TSrc, TDest>>();
+        }
+
         public MappingConfig<TSrc, TDest> Ignore<TPropertyType>(Expression<Func<TDest, TPropertyType>> property)
         {
             Ignored.Add(GetPropertyName(property));
@@ -16,6 +24,12 @@ namespace LeanMapper
         {
             var destPropetyName = GetPropertyName(destProperty);
             MappingFunctions[destPropetyName] = mappingExpression;
+            return this;
+        }
+
+        public MappingConfig<TSrc, TDest> AfterMapping(Action<TSrc, TDest> action)
+        {
+            AfterMappingActions.Add(action);
             return this;
         }
 

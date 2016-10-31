@@ -16,7 +16,7 @@ namespace LeanMapper.Tests
                 .Ignore(p => p.Name)
                 .MapProperty(p => p.AnotherName, d => d.Name);
 
-            var dto = LeanMapper.Map<SimpleDto>(poco);
+            var dto = LeanMapper.Map<SimplePoco, SimpleDto>(poco);
 
             Assert.AreEqual(poco.Id, dto.Id);
             Assert.IsNull(dto.Name);
