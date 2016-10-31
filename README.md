@@ -2,3 +2,7 @@ LeanMapper [![Build status](https://ci.appveyor.com/api/projects/status/5xvsx37d
 ===========
 
 A lightweight, easy to use object mapper for .NET.
+
+### Hat Tips
+
+* [Mapster](https://github.com/eswann/Mapster): Provided the basis for a number of unit tests and benchmark tests

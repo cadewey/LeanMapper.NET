@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LeanMapper.cs" />
-    <Compile Include="Mappingconfig.cs" />
+    <Compile Include="MappingConfig.cs" />
     <Compile Include="MappingConfigBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
