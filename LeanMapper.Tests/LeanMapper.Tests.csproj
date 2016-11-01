@@ -65,8 +65,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LeanMapper\LeanMapper.csproj">
-      <Project>{ea5e9a8f-ffb0-4e2c-a66f-c2ef97a22d16}</Project>
+    <ProjectReference Include="..\LeanMapper\LeanMapper.xproj">
+      <Project>{5919d532-2f62-43aa-942d-5403cdb2c860}</Project>
       <Name>LeanMapper</Name>
     </ProjectReference>
   </ItemGroup>

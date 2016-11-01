@@ -103,11 +103,11 @@ namespace LeanMapper
 
         private static bool PublicallyAccessible(Type inType, Type outType)
         {
-            if (!inType.IsPublic || !outType.IsPublic)
+            if (!inType.IsPublic() || !outType.IsPublic())
                 return false;
 
-            return inType.GetProperties().All(p => p.PropertyType.IsPublic) &&
-                outType.GetProperties().All(p => p.PropertyType.IsPublic);
+            return inType.GetProperties().All(p => p.PropertyType.IsPublic()) &&
+                outType.GetProperties().All(p => p.PropertyType.IsPublic());
         }
 
         private static void BuildExpressionTreeForMapping(Type inType, Type outType)
@@ -119,6 +119,7 @@ namespace LeanMapper
             var initBlock = BuildMemberAssignments(inType, outType, inVariable);
             var block = Expression.Block(locals, inVariableAssign, initBlock);
 
+#if NET452
             if (PublicallyAccessible(inType, outType))
             {
                 var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
@@ -134,12 +135,11 @@ namespace LeanMapper
                 var resultingType = typeBuilder.CreateType();
                 var function = Delegate.CreateDelegate(expression.Type, resultingType.GetMethod("MapMethod"));
                 _mapperMethodCache[inType][outType] = (Func<object, object>)function;
+                return;
             }
-            else
-            {
-                var func = Expression.Lambda<Func<object, object>>(block, inVariableObj).Compile();
-                _mapperMethodCache[inType][outType] = func;
-            }
+#endif
+            var func = Expression.Lambda<Func<object, object>>(block, inVariableObj).Compile();
+            _mapperMethodCache[inType][outType] = func;
         }
 
         private static MemberAssignment DetermineMemberAssignmentForProperties(PropertyInfo p, PropertyInfo inProp, MethodCallExpression inPropertyGet, Type inType)
@@ -152,7 +152,7 @@ namespace LeanMapper
                 var outUnderlyingType = DetermineUnderlyingType(outPropertyType);
                 var inUnderlyingType = DetermineUnderlyingType(inProp.PropertyType);
 
-                if (outUnderlyingType == inUnderlyingType && outUnderlyingType.IsValueType)
+                if (outUnderlyingType == inUnderlyingType && outUnderlyingType.IsValueType())
                 {
                     getExpression = Expression.Convert(inPropertyGet, outPropertyType);
                 }
@@ -160,7 +160,7 @@ namespace LeanMapper
                 {
                     var toString = inProp.PropertyType.GetMethod("ToString", new Type[] { });
 
-                    if (!inProp.PropertyType.IsValueType)
+                    if (!inProp.PropertyType.IsValueType())
                     {
                         var nullCheck = Expression.NotEqual(inPropertyGet, Expression.Constant(null, inProp.PropertyType));
                         getExpression = Expression.Condition(nullCheck, Expression.Call(inPropertyGet, toString), Expression.Constant(null, typeof(string)));
@@ -173,7 +173,7 @@ namespace LeanMapper
                     getExpression = DetermineGetExpressionForCollection(p, inProp, inPropertyGet, inType);
 
                 }
-                else if (outPropertyType.BaseType == typeof(Enum))
+                else if (outPropertyType.BaseType() == typeof(Enum))
                 {
                     getExpression = DetermineGetExpressionForEnum(p, inProp, inPropertyGet);
                 }
@@ -200,7 +200,7 @@ namespace LeanMapper
 
         private static Expression DetermineGetExpression(PropertyInfo p, PropertyInfo inProp, Expression inPropertyGet)
         {
-            if (p.PropertyType.IsValueType || p.PropertyType == p.DeclaringType || p.PropertyType.GetConstructor(new Type[] { }) == null)
+            if (p.PropertyType.IsValueType() || p.PropertyType == p.DeclaringType || p.PropertyType.GetConstructor(new Type[] { }) == null)
                 return inPropertyGet; // Do a ref assign, otherwise we create a circular reference
             else
             {
@@ -222,7 +222,7 @@ namespace LeanMapper
             var props = outType.GetProperties();
             var memberAssignments = new List<MemberAssignment>();
             var config = FindConfig(inType, outType);
-            var baseConfigs = FindBaseConfigs(inType.BaseType, outType);
+            var baseConfigs = FindBaseConfigs(inType.BaseType(), outType);
 
             foreach (var p in props)
             {
@@ -279,7 +279,7 @@ namespace LeanMapper
 
             var arr = Expression.Assign(arrVar, newArr);
             var lenAssign = Expression.Assign(collectionLength, Expression.ArrayLength(arrVar));
-            var srcAssign = (inProp.PropertyType.BaseType == typeof(Array))
+            var srcAssign = (inProp.PropertyType.BaseType() == typeof(Array))
                 ? Expression.Assign(sourceCollection, inPropertyGet)
                 : Expression.Assign(sourceCollection, Expression.Call(null, typeof(Enumerable).GetMethod("ToArray").MakeGenericMethod(inElementType), inPropertyGet));
 
@@ -303,7 +303,7 @@ namespace LeanMapper
                     breakLabel),
                 arrVar);
 
-            var convertExpression = p.PropertyType.BaseType == typeof(Array)
+            var convertExpression = p.PropertyType.BaseType() == typeof(Array)
                 ? loop
                 : p.PropertyType.GetInterfaces().Any(i => i.Name.Contains("IList"))
                     ? Expression.Call(null, typeof(Enumerable).GetMethod("ToList").MakeGenericMethod(outElementType), loop)
