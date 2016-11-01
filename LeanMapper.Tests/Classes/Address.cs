@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace LeanMapper.Tests.Classes
+﻿namespace LeanMapper.Tests.Classes
 {
-    [ComplexType]
     public class Address
     {
         public string Street { get; set; }

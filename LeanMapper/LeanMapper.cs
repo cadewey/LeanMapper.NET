@@ -328,7 +328,8 @@ namespace LeanMapper
             }
             else
             {
-                var enumConvert = Expression.Call(null, typeof(Enum).GetMethod("ToObject", new[] { typeof(Type), inProp.PropertyType }), outTypeConst, inPropertyGet);
+                var objCast = Expression.Convert(inPropertyGet, typeof(object));
+                var enumConvert = Expression.Call(null, typeof(Enum).GetMethod("ToObject", new[] { typeof(Type), typeof(object) }), outTypeConst, objCast);
                 return Expression.Convert(enumConvert, p.PropertyType);
             }
         }

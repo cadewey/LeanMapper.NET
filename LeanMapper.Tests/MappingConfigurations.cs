@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using LeanMapper.Tests.Classes;
+using Xunit;
 
 namespace LeanMapper.Tests
 {
@@ -81,10 +81,9 @@ namespace LeanMapper.Tests
 
     #endregion
 
-    [TestClass]
     public class MappingConfigurations
     {
-        [TestMethod]
+        [Fact]
         public void IgnoreValueMemberTest()
         {
             var currentDate = DateTime.Now;
@@ -102,11 +101,11 @@ namespace LeanMapper.Tests
 
             var objB = LeanMapper.Map<ConfigA, ConfigB>(objA);
 
-            Assert.IsNotNull(objB);
-            Assert.IsTrue(objB.Id == 0 && objB.FullName == null && objB.BirthDate == currentDate);
+            Assert.NotNull(objB);
+            Assert.True(objB.Id == 0 && objB.FullName == null && objB.BirthDate == currentDate);
         }
 
-        [TestMethod]
+        [Fact]
         public void IgnoreReferenceMemberTest()
         {
             var currentDate = DateTime.Now;
@@ -125,12 +124,12 @@ namespace LeanMapper.Tests
 
             var objC = LeanMapper.Map<ConfigA, ConfigC>(objA);
 
-            Assert.IsNotNull(objC);
-            Assert.IsTrue(objC.Id == objA.Id && objC.BirthDate == currentDate);
-            Assert.IsTrue(objC.Name == null && objC.Surname == null);
+            Assert.NotNull(objC);
+            Assert.True(objC.Id == objA.Id && objC.BirthDate == currentDate);
+            Assert.True(objC.Name == null && objC.Surname == null);
         }
 
-        [TestMethod]
+        [Fact]
         public void MapFromTest()
         {
             var currentDate = DateTime.Now;
@@ -148,11 +147,11 @@ namespace LeanMapper.Tests
 
             var objD = LeanMapper.Map<ConfigC, ConfigD>(objC);
 
-            Assert.IsNotNull(objD);
-            Assert.IsTrue(objD.Id == 1 && objD.FullName == "Timuçin KIVANÇ" && objD.BirthDate == currentDate);
+            Assert.NotNull(objD);
+            Assert.True(objD.Id == 1 && objD.FullName == "Timuçin KIVANÇ" && objD.BirthDate == currentDate);
         }
 
-        [TestMethod]
+        [Fact]
         public void AfterMapping_SimpleType()
         {
             var currentDate = DateTime.Now;
@@ -170,11 +169,11 @@ namespace LeanMapper.Tests
 
             var objD = LeanMapper.Map<ConfigC, ConfigD>(objC);
 
-            Assert.IsNotNull(objD);
-            Assert.AreEqual(1001, objD.Id);
+            Assert.NotNull(objD);
+            Assert.Equal(1001, objD.Id);
         }
 
-        [TestMethod]
+        [Fact]
         public void AfterMapping_CollectionType()
         {
             var objE = new ConfigE
@@ -198,14 +197,14 @@ namespace LeanMapper.Tests
 
             var objF = LeanMapper.Map<ConfigE, ConfigF>(objE);
 
-            Assert.IsNotNull(objF);
-            Assert.AreEqual(objE.Id, objF.Id);
-            Assert.AreEqual(objE.Name, objF.Name);
-            CollectionAssert.AreEqual(objF.Values, new []{ "First Value", "Second Value", "Third Value"});
+            Assert.NotNull(objF);
+            Assert.Equal(objE.Id, objF.Id);
+            Assert.Equal(objE.Name, objF.Name);
+            Assert.Equal(objF.Values, new []{ "First Value", "Second Value", "Third Value"});
         }
 
 
-        [TestMethod]
+        [Fact]
         public void NewInstanceTest()
         {
             TestNewInstanceA obj = new TestNewInstanceA();
@@ -214,12 +213,12 @@ namespace LeanMapper.Tests
 
             var newObj = LeanMapper.Map<TestNewInstanceA, TestNewInstanceB>(obj);
 
-            Assert.IsTrue(newObj.Name == "Tim");
-            Assert.IsTrue(obj.Child.Name == newObj.Child.Name);
+            Assert.True(newObj.Name == "Tim");
+            Assert.True(obj.Child.Name == newObj.Child.Name);
 
             obj.Child.Name = "İstanbul";
 
-            Assert.IsTrue(obj.Child.Name != newObj.Child.Name);
+            Assert.True(obj.Child.Name != newObj.Child.Name);
         }
 
         #region Data

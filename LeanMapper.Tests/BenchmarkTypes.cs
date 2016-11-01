@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LeanMapper.Tests
 {
-    [TestClass]
     public class BenchmarkTypes
     {
         #region Object creation
@@ -69,27 +68,27 @@ namespace LeanMapper.Tests
 
         #endregion
 
-        [TestMethod]
+        [Fact]
         public void Map_Simple_Type()
         {
             var foo = GetFoo();
             var dstFoo = LeanMapper.Map<Foo, Foo>(foo);
 
-            Assert.AreEqual(foo.Name, dstFoo.Name);
-            Assert.AreEqual(foo.DateTime, dstFoo.DateTime);
-            Assert.AreEqual(foo.Doublen, dstFoo.Doublen);
-            Assert.AreEqual(foo.Floatn, dstFoo.Floatn);
-            Assert.AreEqual(foo.Int32, dstFoo.Int32);
-            Assert.AreEqual(foo.Int64, dstFoo.Int64);
-            Assert.AreEqual(foo.NullInt, dstFoo.NullInt);
-            Assert.AreEqual(foo.Foo1, dstFoo.Foo1);
-            CollectionAssert.AreEqual(foo.FooArr, dstFoo.FooArr);
-            CollectionAssert.AreEqual(foo.IntArr, dstFoo.IntArr);
-            CollectionAssert.AreEqual(foo.Ints.ToArray(), dstFoo.Ints.ToArray());
-            Assert.AreNotSame(foo, dstFoo);
+            Assert.Equal(foo.Name, dstFoo.Name);
+            Assert.Equal(foo.DateTime, dstFoo.DateTime);
+            Assert.Equal(foo.Doublen, dstFoo.Doublen);
+            Assert.Equal(foo.Floatn, dstFoo.Floatn);
+            Assert.Equal(foo.Int32, dstFoo.Int32);
+            Assert.Equal(foo.Int64, dstFoo.Int64);
+            Assert.Equal(foo.NullInt, dstFoo.NullInt);
+            Assert.Equal(foo.Foo1, dstFoo.Foo1);
+            Assert.Equal(foo.FooArr, dstFoo.FooArr);
+            Assert.Equal(foo.IntArr, dstFoo.IntArr);
+            Assert.Equal(foo.Ints.ToArray(), dstFoo.Ints.ToArray());
+            Assert.NotSame(foo, dstFoo);
         }
 
-        [TestMethod]
+        [Fact]
         public void Map_Complex_Type_With_Null_Collections()
         {
             LeanMapper.Map<Customer, CustomerDTO>(new Customer());
@@ -98,22 +97,31 @@ namespace LeanMapper.Tests
             LeanMapper.Map<AddressDTO, Address>(new AddressDTO());
         }
 
-        [TestMethod]
+        [Fact]
         public void Map_Complex_Type()
         {
             var customer = GetCustomer();
             var dstCustomer = LeanMapper.Map<Customer, CustomerDTO>(customer);
 
-            Assert.AreEqual(customer.Id, dstCustomer.Id);
-            Assert.AreEqual(customer.Name, dstCustomer.Name);
-            Assert.AreEqual(customer.Address, dstCustomer.Address);
-            Assert.AreEqual(customer.HomeAddress, dstCustomer.HomeAddress);
+            Assert.Equal(customer.Id, dstCustomer.Id);
+            Assert.Equal(customer.Name, dstCustomer.Name);
+            Assert.Equal(customer.Address, dstCustomer.Address);
+            Assert.True(customer.HomeAddress.Equals(dstCustomer.HomeAddress));
 
-            Assert.IsNull(dstCustomer.AddressCity);
-            Assert.AreNotSame(customer.Address, dstCustomer.Address);
-            Assert.AreNotSame(customer.HomeAddress, dstCustomer.HomeAddress);
-            CollectionAssert.AreEqual(customer.Addresses, dstCustomer.Addresses);
-            CollectionAssert.AreEqual(customer.WorkAddresses.ToList(), dstCustomer.WorkAddresses);
+            Assert.Null(dstCustomer.AddressCity);
+            Assert.NotSame(customer.Address, dstCustomer.Address);
+            Assert.NotSame(customer.HomeAddress, dstCustomer.HomeAddress);
+
+            for (int i = 0; i < customer.Addresses.Length; ++i)
+            {
+                Assert.True(customer.Addresses[i].Equals(dstCustomer.Addresses[i]));
+            }
+
+            var workAddressesList = customer.WorkAddresses.ToList();
+            for (int i = 0; i < workAddressesList.Count(); ++i)
+            {
+                Assert.True(workAddressesList[i].Equals(dstCustomer.WorkAddresses[i]));
+            }
         }
     }
 
@@ -154,6 +162,7 @@ namespace LeanMapper.Tests
         public string City { get; set; }
         public string Country { get; set; }
 
+        // TODO: Implement this in a less awful way
         public override bool Equals(object obj)
         {
             var aObj = obj as Address;
@@ -187,6 +196,7 @@ namespace LeanMapper.Tests
         public string City { get; set; }
         public string Country { get; set; }
 
+        // TODO: Implement this in a less awful way
         public override bool Equals(object obj)
         {
             var aObj = obj as Address;

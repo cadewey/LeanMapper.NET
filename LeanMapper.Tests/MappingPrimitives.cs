@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LeanMapper.Tests
 {
-    [TestClass]
     public class MappingPrimitives
     {
-        [TestMethod]
+        [Fact]
         public void Byte_Array_In_Test_Class_Is_Mapped_Correctly()
         {
             string testString = "this is a string that will later be converted to a byte array and other text blah blah blah I'm not sure what else to put here...";
@@ -16,10 +15,10 @@ namespace LeanMapper.Tests
             var testB = LeanMapper.Map<TestA, TestB>(testA);
             var resultString = Encoding.ASCII.GetString(testB.Bytes);
 
-            Assert.AreEqual(testString, resultString);
+            Assert.Equal(testString, resultString);
         }
 
-        [TestMethod]
+        [Fact]
         public void ValueType_String_Object_Is_Always_Primitive()
         {
             var sourceDto = new PrimitivePoco
@@ -29,8 +28,8 @@ namespace LeanMapper.Tests
             };
             var targetDto = LeanMapper.Map<PrimitivePoco, PrimitivePoco>(sourceDto);
 
-            Assert.AreEqual(sourceDto.Id, targetDto.Id);
-            Assert.AreEqual(sourceDto.Time, targetDto.Time);
+            Assert.Equal(sourceDto.Id, targetDto.Id);
+            Assert.Equal(sourceDto.Time, targetDto.Time);
         }
 
         #region TestClasses

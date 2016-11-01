@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LeanMapper.Tests
 {
@@ -38,80 +38,79 @@ namespace LeanMapper.Tests
 
     #endregion
 
-    [TestClass]
     public class MappingEnums
     {
-        [TestMethod]
+        [Fact]
         public void Int_Is_Mapped_To_Enum()
         {
             var employee = new Employee { Id = Guid.NewGuid(), Name = "Timuçin", Surname = "KIVANÇ", Department = (int)Departments.IT  };
 
             var dto = LeanMapper.Map<Employee, EmployeeDTO>(employee);
 
-            Assert.IsNotNull(dto);
+            Assert.NotNull(dto);
           
-            Assert.IsTrue(dto.Id == employee.Id &&
+            Assert.True(dto.Id == employee.Id &&
                 dto.Name == employee.Name &&
                 dto.Department == Departments.IT);
         }
 
-        [TestMethod]
+        [Fact]
         public void String_Is_Mapped_To_Enum()
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT.ToString() };
 
             var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
-            Assert.IsNotNull(dto);
+            Assert.NotNull(dto);
 
-            Assert.AreEqual(employee.Id, dto.Id);
-            Assert.AreEqual(employee.Name, dto.Name);
-            Assert.AreEqual(Departments.IT, dto.Department);
+            Assert.Equal(employee.Id, dto.Id);
+            Assert.Equal(employee.Name, dto.Name);
+            Assert.Equal(Departments.IT, dto.Department);
         }
 
-        [TestMethod]
+        [Fact]
         public void Null_String_Is_Mapped_To_Enum_Default()
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = null };
 
             var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
-            Assert.IsNotNull(dto);
+            Assert.NotNull(dto);
 
-            Assert.AreEqual(employee.Id, dto.Id);
-            Assert.AreEqual(employee.Name, dto.Name);
-            Assert.AreEqual(Departments.Finance, dto.Department);
+            Assert.Equal(employee.Id, dto.Id);
+            Assert.Equal(employee.Name, dto.Name);
+            Assert.Equal(Departments.Finance, dto.Department);
         }
 
-        [TestMethod]
+        [Fact]
         public void Empty_String_Is_Mapped_To_Enum_Default()
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = "" };
 
             var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
-            Assert.IsNotNull(dto);
+            Assert.NotNull(dto);
 
-            Assert.AreEqual(employee.Id, dto.Id);
-            Assert.AreEqual(employee.Name, dto.Name);
-            Assert.AreEqual(Departments.Finance, dto.Department);
+            Assert.Equal(employee.Id, dto.Id);
+            Assert.Equal(employee.Name, dto.Name);
+            Assert.Equal(Departments.Finance, dto.Department);
         }
 
-        [TestMethod]
+        [Fact]
         public void Enum_Is_Mapped_To_String()
         {
             var employeeDto = new EmployeeDTO { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT };
 
             var poco = LeanMapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
 
-            Assert.IsNotNull(poco);
+            Assert.NotNull(poco);
 
-            Assert.AreEqual(poco.Id, employeeDto.Id);
-            Assert.AreEqual(poco.Name, employeeDto.Name);
-            Assert.AreEqual(poco.Department, employeeDto.Department.ToString());
+            Assert.Equal(poco.Id, employeeDto.Id);
+            Assert.Equal(poco.Name, employeeDto.Name);
+            Assert.Equal(poco.Department, employeeDto.Department.ToString());
         }
 
-        [TestMethod]
+        [Fact]
         public void MapEnumToStringSpeedTest()
         {
             var employeeDto = new EmployeeDTO { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT };

@@ -1,8 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace LeanMapper.Tests
 {
-    [TestClass]
     public class MappingEntityWithOnlyPrimitives
     {
         #region Classes
@@ -46,13 +45,13 @@ namespace LeanMapper.Tests
 
         #endregion
 
-        [TestMethod]
+        [Fact]
         public void ConvertPrimitiveEntityToDto()
         {
             var dto = LeanMapper.Map<Customer, CustomerDTO>(GetCustomer());
             
-            Assert.IsNotNull(dto);
-            Assert.IsTrue(dto.Id == 1 && 
+            Assert.NotNull(dto);
+            Assert.True(dto.Id == 1 && 
                 dto.Name == "Timuçin" && 
                 dto.Credit == 1542 &&
                 dto.IsActive &&
