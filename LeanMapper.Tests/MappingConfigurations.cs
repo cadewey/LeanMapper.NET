@@ -96,10 +96,10 @@ namespace LeanMapper.Tests
                 Surname = "KIVANÇ"
             };
 
-            LeanMapper.Config<ConfigA, ConfigB>()
+            Mapper.Config<ConfigA, ConfigB>()
                 .Ignore(dest => dest.Id);
 
-            var objB = LeanMapper.Map<ConfigA, ConfigB>(objA);
+            var objB = Mapper.Map<ConfigA, ConfigB>(objA);
 
             Assert.NotNull(objB);
             Assert.True(objB.Id == 0 && objB.FullName == null && objB.BirthDate == currentDate);
@@ -118,11 +118,11 @@ namespace LeanMapper.Tests
                 Surname = "KIVANÇ"
             };
 
-            LeanMapper.Config<ConfigA, ConfigC>()
+            Mapper.Config<ConfigA, ConfigC>()
                 .Ignore(dest => dest.Name)
                 .Ignore(dest => dest.Surname);
 
-            var objC = LeanMapper.Map<ConfigA, ConfigC>(objA);
+            var objC = Mapper.Map<ConfigA, ConfigC>(objA);
 
             Assert.NotNull(objC);
             Assert.True(objC.Id == objA.Id && objC.BirthDate == currentDate);
@@ -142,10 +142,10 @@ namespace LeanMapper.Tests
                 Surname = "KIVANÇ"
             };
 
-            LeanMapper.Config<ConfigC, ConfigD>()
+            Mapper.Config<ConfigC, ConfigD>()
                 .MapProperty(dest => dest.FullName, src => string.Concat(src.Name, " ", src.Surname));
 
-            var objD = LeanMapper.Map<ConfigC, ConfigD>(objC);
+            var objD = Mapper.Map<ConfigC, ConfigD>(objC);
 
             Assert.NotNull(objD);
             Assert.True(objD.Id == 1 && objD.FullName == "Timuçin KIVANÇ" && objD.BirthDate == currentDate);
@@ -164,10 +164,10 @@ namespace LeanMapper.Tests
                 Surname = "KIVANÇ"
             };
 
-            LeanMapper.Config<ConfigC, ConfigD>()
+            Mapper.Config<ConfigC, ConfigD>()
                 .AfterMapping((s, d) => d.Id += 1000);
 
-            var objD = LeanMapper.Map<ConfigC, ConfigD>(objC);
+            var objD = Mapper.Map<ConfigC, ConfigD>(objC);
 
             Assert.NotNull(objD);
             Assert.Equal(1001, objD.Id);
@@ -183,7 +183,7 @@ namespace LeanMapper.Tests
                 Values = new List<string> { "First", "Second", "Third" }
             };
 
-            LeanMapper.Config<ConfigE, ConfigF>()
+            Mapper.Config<ConfigE, ConfigF>()
                 .Ignore(o => o.Values)
                 .AfterMapping((s, d) =>
                 {
@@ -195,7 +195,7 @@ namespace LeanMapper.Tests
                     }
                 });
 
-            var objF = LeanMapper.Map<ConfigE, ConfigF>(objE);
+            var objF = Mapper.Map<ConfigE, ConfigF>(objE);
 
             Assert.NotNull(objF);
             Assert.Equal(objE.Id, objF.Id);
@@ -211,7 +211,7 @@ namespace LeanMapper.Tests
             obj.Name = "Tim";
             obj.Child = new TestNewInstanceC() { Name = "Kıvanç" };
 
-            var newObj = LeanMapper.Map<TestNewInstanceA, TestNewInstanceB>(obj);
+            var newObj = Mapper.Map<TestNewInstanceA, TestNewInstanceB>(obj);
 
             Assert.True(newObj.Name == "Tim");
             Assert.True(obj.Child.Name == newObj.Child.Name);

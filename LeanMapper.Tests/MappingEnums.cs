@@ -45,7 +45,7 @@ namespace LeanMapper.Tests
         {
             var employee = new Employee { Id = Guid.NewGuid(), Name = "Timuçin", Surname = "KIVANÇ", Department = (int)Departments.IT  };
 
-            var dto = LeanMapper.Map<Employee, EmployeeDTO>(employee);
+            var dto = Mapper.Map<Employee, EmployeeDTO>(employee);
 
             Assert.NotNull(dto);
           
@@ -59,7 +59,7 @@ namespace LeanMapper.Tests
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT.ToString() };
 
-            var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
+            var dto = Mapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
             Assert.NotNull(dto);
 
@@ -73,7 +73,7 @@ namespace LeanMapper.Tests
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = null };
 
-            var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
+            var dto = Mapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
             Assert.NotNull(dto);
 
@@ -87,7 +87,7 @@ namespace LeanMapper.Tests
         {
             var employee = new EmployeeWithStringEnum { Id = Guid.NewGuid(), Name = "Timuçin", Department = "" };
 
-            var dto = LeanMapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
+            var dto = Mapper.Map<EmployeeWithStringEnum, EmployeeDTO>(employee);
 
             Assert.NotNull(dto);
 
@@ -101,7 +101,7 @@ namespace LeanMapper.Tests
         {
             var employeeDto = new EmployeeDTO { Id = Guid.NewGuid(), Name = "Timuçin", Department = Departments.IT };
 
-            var poco = LeanMapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
+            var poco = Mapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
 
             Assert.NotNull(poco);
 
@@ -118,7 +118,7 @@ namespace LeanMapper.Tests
             var timer = Stopwatch.StartNew();
             for (int i = 0; i < 100000; i++)
             {
-                var poco = LeanMapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
+                var poco = Mapper.Map<EmployeeDTO, EmployeeWithStringEnum>(employeeDto);
             }
             timer.Stop();
             Console.WriteLine("Enum to string Elapsed time ms: " + timer.ElapsedMilliseconds);

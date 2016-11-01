@@ -12,7 +12,7 @@ namespace LeanMapper.Tests
             string testString = "this is a string that will later be converted to a byte array and other text blah blah blah I'm not sure what else to put here...";
 
             var testA = new TestA { Bytes = Encoding.ASCII.GetBytes(testString) };
-            var testB = LeanMapper.Map<TestA, TestB>(testA);
+            var testB = Mapper.Map<TestA, TestB>(testA);
             var resultString = Encoding.ASCII.GetString(testB.Bytes);
 
             Assert.Equal(testString, resultString);
@@ -26,7 +26,7 @@ namespace LeanMapper.Tests
                 Id = "test",
                 Time = TimeSpan.FromHours(7),
             };
-            var targetDto = LeanMapper.Map<PrimitivePoco, PrimitivePoco>(sourceDto);
+            var targetDto = Mapper.Map<PrimitivePoco, PrimitivePoco>(sourceDto);
 
             Assert.Equal(sourceDto.Id, targetDto.Id);
             Assert.Equal(sourceDto.Time, targetDto.Time);

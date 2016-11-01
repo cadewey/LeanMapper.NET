@@ -72,7 +72,7 @@ namespace LeanMapper.Tests
         public void Map_Simple_Type()
         {
             var foo = GetFoo();
-            var dstFoo = LeanMapper.Map<Foo, Foo>(foo);
+            var dstFoo = Mapper.Map<Foo, Foo>(foo);
 
             Assert.Equal(foo.Name, dstFoo.Name);
             Assert.Equal(foo.DateTime, dstFoo.DateTime);
@@ -91,17 +91,17 @@ namespace LeanMapper.Tests
         [Fact]
         public void Map_Complex_Type_With_Null_Collections()
         {
-            LeanMapper.Map<Customer, CustomerDTO>(new Customer());
-            LeanMapper.Map<CustomerDTO, Customer>(new CustomerDTO());
-            LeanMapper.Map<Address, AddressDTO>(new Address());
-            LeanMapper.Map<AddressDTO, Address>(new AddressDTO());
+            Mapper.Map<Customer, CustomerDTO>(new Customer());
+            Mapper.Map<CustomerDTO, Customer>(new CustomerDTO());
+            Mapper.Map<Address, AddressDTO>(new Address());
+            Mapper.Map<AddressDTO, Address>(new AddressDTO());
         }
 
         [Fact]
         public void Map_Complex_Type()
         {
             var customer = GetCustomer();
-            var dstCustomer = LeanMapper.Map<Customer, CustomerDTO>(customer);
+            var dstCustomer = Mapper.Map<Customer, CustomerDTO>(customer);
 
             Assert.Equal(customer.Id, dstCustomer.Id);
             Assert.Equal(customer.Name, dstCustomer.Name);

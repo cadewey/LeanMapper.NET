@@ -14,13 +14,13 @@ namespace LeanMapper.Tests
         {
             var poco = new SimplePoco { Id = Guid.NewGuid(), Name = "TestName", ValueString = "42", Timestamp = "12/25/2016 5:00 PM" };
 
-            LeanMapper.Config<SimplePocoBase, SimpleDtoBase>()
+            Mapper.Config<SimplePocoBase, SimpleDtoBase>()
                 .MapProperty(d => d.Value, p => Int32.Parse(p.ValueString));
 
-            LeanMapper.Config<SimplePocoBase, IDto>()
+            Mapper.Config<SimplePocoBase, IDto>()
                 .MapProperty(d => d.Timestamp, p => DateTime.Parse(p.Timestamp));
 
-            var dto = LeanMapper.Map<SimplePoco, SimpleDto>(poco);
+            var dto = Mapper.Map<SimplePoco, SimpleDto>(poco);
 
             Assert.Equal(poco.Id, dto.Id);
             Assert.Equal(poco.Name, dto.Name);

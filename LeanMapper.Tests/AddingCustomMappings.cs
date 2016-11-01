@@ -11,11 +11,11 @@ namespace LeanMapper.Tests
         {
             var poco = new SimplePoco {Id = Guid.NewGuid(), Name = "TestName"};
 
-            LeanMapper.Config<SimplePoco, SimpleDto>()
+            Mapper.Config<SimplePoco, SimpleDto>()
                 .Ignore(p => p.Name)
                 .MapProperty(p => p.AnotherName, d => d.Name);
 
-            var dto = LeanMapper.Map<SimplePoco, SimpleDto>(poco);
+            var dto = Mapper.Map<SimplePoco, SimpleDto>(poco);
 
             Assert.Equal(poco.Id, dto.Id);
             Assert.Null(dto.Name);

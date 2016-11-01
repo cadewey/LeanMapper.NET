@@ -9,12 +9,12 @@ using System.Reflection.Emit;
 
 namespace LeanMapper
 {
-    public static class LeanMapper
+    public static class Mapper
     {
         private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>> _mapperMethodCache;
         private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>> _mappingConfigs;
 
-        static LeanMapper()
+        static Mapper()
         {
             _mapperMethodCache = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>>();
             _mappingConfigs = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>>();

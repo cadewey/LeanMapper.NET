@@ -12,6 +12,7 @@
   },
   "testRunner": "xunit",
   "frameworks": {
+    "net452": {},
     "netcoreapp1.0": {
       "dependencies": {
         "System.Runtime.Serialization.Primitives": "4.1.1",
@@ -24,7 +25,6 @@
         "dotnet5.4",
         "portable-net451+win8"
       ]
-    },
-    "net452": {}
+    }
   }
 }
