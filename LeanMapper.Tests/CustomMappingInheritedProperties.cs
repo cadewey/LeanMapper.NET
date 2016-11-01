@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LeanMapper.Tests
 {
-    [TestClass]
     public class CustomMappingInheritedProperties
     {
-        [TestMethod]
+        [Fact]
         public void Inherited_Property_Is_Custom_Mapped_Successfully()
         {
             var poco = new SimplePoco { Id = Guid.NewGuid(), Name = "TestName", ValueString = "42", Timestamp = "12/25/2016 5:00 PM" };
@@ -23,10 +22,10 @@ namespace LeanMapper.Tests
 
             var dto = LeanMapper.Map<SimplePoco, SimpleDto>(poco);
 
-            Assert.AreEqual(poco.Id, dto.Id);
-            Assert.AreEqual(poco.Name, dto.Name);
-            Assert.AreEqual(42, dto.Value);
-            Assert.AreEqual(DateTime.Parse("12/25/2016 5:00 PM"), dto.Timestamp);
+            Assert.Equal(poco.Id, dto.Id);
+            Assert.Equal(poco.Name, dto.Name);
+            Assert.Equal(42, dto.Value);
+            Assert.Equal(DateTime.Parse("12/25/2016 5:00 PM"), dto.Timestamp);
         }
 
         #region TestClasses

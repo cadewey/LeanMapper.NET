@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace LeanMapper.Tests
 {
-    [TestClass]
     public class AddingCustomMappings
     {
-        [TestMethod]
+        [Fact]
         public void Property_Is_Mapped_To_Different_Property_Successfully()
         {
             var poco = new SimplePoco {Id = Guid.NewGuid(), Name = "TestName"};
@@ -18,9 +17,9 @@ namespace LeanMapper.Tests
 
             var dto = LeanMapper.Map<SimplePoco, SimpleDto>(poco);
 
-            Assert.AreEqual(poco.Id, dto.Id);
-            Assert.IsNull(dto.Name);
-            Assert.AreEqual(poco.Name, dto.AnotherName);
+            Assert.Equal(poco.Id, dto.Id);
+            Assert.Null(dto.Name);
+            Assert.Equal(poco.Name, dto.AnotherName);
         }
 
         #region TestClasses
