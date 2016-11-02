@@ -53,7 +53,7 @@ class ModelObject
     string DelimitedValues { get; set; }
 }
 
-LeanMapper.Configure<ModelObject, DomainObject>()
+LeanMapper.Mapper.Configure<ModelObject, DomainObject>()
     .Ignore(d => d.Id) // Don't map onto the Id property
     .MapProperty(d => d.SeparatedValues, m => m.DelimitedValues.Split(',')) // Custom mapping onto SeparatedValues
     .AfterMapping((d, m) =>
@@ -98,15 +98,15 @@ class SimpleDto : SimpleDtoBase, IDto
 }
 
 // Configure the mappings between our base types
-Mapper.Config<SimplePocoBase, SimpleDtoBase>()
+LeanMapper.Mapper.Config<SimplePocoBase, SimpleDtoBase>()
     .MapProperty(d => d.Value, p => Int32.Parse(p.ValueString));
 
 // You can also map an interface if you need to
-Mapper.Config<SimplePocoBase, IDto>()
+LeanMapper.Mapper.Config<SimplePocoBase, IDto>()
     .MapProperty(d => d.Timestamp, p => DateTime.Parse(p.Timestamp));
 
 // Now the mapper knows everything it needs about the properties on the derived types
-var dto = Mapper.Map<SimplePoco, SimpleDto>(poco);
+var dto = LeanMapper.Mapper.Map<SimplePoco, SimpleDto>(poco);
 ```
 
 ### Hat Tips
