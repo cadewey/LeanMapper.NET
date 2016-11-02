@@ -258,7 +258,7 @@ namespace LeanMapper
             var props = outType.GetProperties();
             var memberAssignments = new List<MemberAssignment>();
             var config = FindConfig(inType, outType);
-            var baseConfigs = FindInheritedConfigs(inType.BaseType(), outType);
+            var baseConfigs = FindInheritedConfigs(inType, outType);
 
             foreach (var p in props)
             {

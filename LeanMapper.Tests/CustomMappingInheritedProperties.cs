@@ -28,11 +28,31 @@ namespace LeanMapper.Tests
             Assert.Equal(DateTime.Parse("12/25/2016 5:00 PM"), dto.Timestamp);
         }
 
+        [Fact]
+        public void Interface_To_Interface_Is_Mapped_Successfully()
+        {
+            var now = DateTime.UtcNow;
+            var dto = new SimpleDto { Id = Guid.Empty, Name = "Dto", Value = 42, Timestamp = now };
+
+            Mapper.Config<IDto, IDomain>()
+                .MapProperty(d => d.Timestamp, t => t.Timestamp.ToString("U"));
+
+            var domain = Mapper.Map<SimpleDto, SimpleDomain>(dto);
+
+            Assert.NotNull(domain);
+            Assert.Equal(dto.Timestamp.ToString("U"), domain.Timestamp);
+        }
+
         #region TestClasses
 
         private interface IDto
         {
             DateTime Timestamp { get; set; }
+        }
+
+        private interface IDomain
+        {
+            string Timestamp { get; set; }
         }
 
         private class SimplePocoBase
@@ -50,6 +70,11 @@ namespace LeanMapper.Tests
         {
             public Guid Id { get; set; }
             public string Name { get; set; }
+        }
+
+        private class SimpleDomain : IDomain
+        {
+            public string Timestamp { get; set; }
         }
 
         private class SimpleDto : SimpleDtoBase, IDto
