@@ -1,5 +1,7 @@
 {
   "version": "1.0.0-*",
+  "authors": [ "Carter Dewey" ],
+  "description": "A lightweight, easy to use object mapper for .NET ",
   "buildOptions": {
     "debugType": "portable"
   },
@@ -14,6 +16,10 @@
       },
       "imports": "dnxcore50"
     },
-    "net452": { } 
+    "net452": {}
+  },
+  "packOptions": {
+    "licenseUrl": "https://github.com/eldarerathis/LeanMapper/blob/master/LICENSE.md",
+    "projectUrl": "https://github.com/eldarerathis/LeanMapper"
   }
 }

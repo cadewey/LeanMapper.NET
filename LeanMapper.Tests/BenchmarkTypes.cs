@@ -103,56 +103,59 @@ namespace LeanMapper.Tests
             var customer = GetCustomer();
             var dstCustomer = Mapper.Map<Customer, CustomerDTO>(customer);
 
-            Assert.Equal(customer.Id, dstCustomer.Id);
-            Assert.Equal(customer.Name, dstCustomer.Name);
-            Assert.Equal(customer.Address, dstCustomer.Address);
-            Assert.True(customer.HomeAddress.Equals(dstCustomer.HomeAddress));
-
             Assert.Null(dstCustomer.AddressCity);
             Assert.NotSame(customer.Address, dstCustomer.Address);
             Assert.NotSame(customer.HomeAddress, dstCustomer.HomeAddress);
 
-            for (int i = 0; i < customer.Addresses.Length; ++i)
-            {
-                Assert.True(customer.Addresses[i].Equals(dstCustomer.Addresses[i]));
-            }
+            Assert.Equal(customer.Id, dstCustomer.Id);
+            Assert.Equal(customer.Name, dstCustomer.Name);
 
-            var workAddressesList = customer.WorkAddresses.ToList();
-            for (int i = 0; i < workAddressesList.Count(); ++i)
-            {
-                Assert.True(workAddressesList[i].Equals(dstCustomer.WorkAddresses[i]));
-            }
+            Assert.True(AddressComparer.AreEqual(customer.Address, dstCustomer.Address));
+            Assert.True(AddressComparer.AreEqual(customer.HomeAddress, dstCustomer.HomeAddress));
+            Assert.True(AddressComparer.AreEqualCollections(customer.WorkAddresses.ToList(), dstCustomer.WorkAddresses));
+            Assert.True(AddressComparer.AreEqualCollections(customer.Addresses, dstCustomer.Addresses));
         }
     }
 
     #region TestClasses
 
+    class AddressComparer
+    {
+        public static bool AreEqual(Address addr, Address other)
+        {
+            return addr.Id == other.Id
+                && addr.City == other.City
+                && addr.Country == other.Country
+                && addr.Street == other.Street;
+        }
+
+        public static bool AreEqual(Address addr, AddressDTO dtoObj)
+        {
+            return addr.Id == dtoObj.Id 
+                && addr.City == dtoObj.City 
+                && addr.Country == dtoObj.Country;
+        }
+
+        public static bool AreEqualCollections(IEnumerable<Address> coll, IEnumerable<AddressDTO> dtoColl)
+        {
+            return coll.Zip(dtoColl, AreEqual).All(x => x);
+        }
+    }
+
     public class Foo
     {
         public string Name { get; set; }
-
         public int Int32 { get; set; }
-
         public long Int64 { set; get; }
-
         public int? NullInt { get; set; }
-
         public float Floatn { get; set; }
-
         public double Doublen { get; set; }
-
         public DateTime DateTime { get; set; }
-
         public Foo Foo1 { get; set; }
-
         public IEnumerable<Foo> Foos { get; set; }
-
         public Foo[] FooArr { get; set; }
-
         public int[] IntArr { get; set; }
-
         public IEnumerable<int> Ints { get; set; }
-
     }
 
     public class Address
@@ -161,33 +164,6 @@ namespace LeanMapper.Tests
         public string Street { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-
-        // TODO: Implement this in a less awful way
-        public override bool Equals(object obj)
-        {
-            var aObj = obj as Address;
-            {
-                if (aObj != null)
-                {
-                    return Id == aObj.Id &&
-                           City == aObj.City &&
-                           Country == aObj.Country &&
-                           Street == aObj.Street;
-                }
-
-                var dtoObj = obj as AddressDTO;
-
-                if (dtoObj != null)
-                {
-
-                    return Id == dtoObj.Id &&
-                           City == dtoObj.City &&
-                           Country == dtoObj.Country;
-                }
-            }
-
-            return false;
-        }
     }
 
     public class AddressDTO
@@ -195,32 +171,6 @@ namespace LeanMapper.Tests
         public int Id { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-
-        // TODO: Implement this in a less awful way
-        public override bool Equals(object obj)
-        {
-            var aObj = obj as Address;
-            {
-                if (aObj != null)
-                {
-                    return Id == aObj.Id &&
-                           City == aObj.City &&
-                           Country == aObj.Country;
-                }
-
-                var dtoObj = obj as AddressDTO;
-
-                if (dtoObj != null)
-                {
-
-                    return Id == dtoObj.Id &&
-                           City == dtoObj.City &&
-                           Country == dtoObj.Country;
-                }
-            }
-
-            return false;
-        }
     }
 
     public class Customer

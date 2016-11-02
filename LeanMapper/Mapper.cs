@@ -5,7 +5,10 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+
+#if NET452
 using System.Reflection.Emit;
+#endif
 
 namespace LeanMapper
 {
