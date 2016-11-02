@@ -66,6 +66,15 @@ namespace LeanMapper
             return configs;
         }
 
+        private static Dictionary<Type, MappingConfigBase> FindInheritedConfigs(Type srcType, Type destType)
+        {
+            var sourceTypes = _mappingConfigs.Where(x => x.Key.IsAssignableFrom(srcType));
+            var result = sourceTypes
+                .SelectMany(x => x.Value.Where(y => y.Key.IsAssignableFrom(destType) && y.Key != destType))
+                .ToDictionary(z => z.Key, z => z.Value);
+            return result;
+        }
+
         private static List<MappingConfigBase> FindAndMergeConfigs(Type srcType, Type destType)
         {
             var configs = new List<MappingConfigBase>();
@@ -249,7 +258,7 @@ namespace LeanMapper
             var props = outType.GetProperties();
             var memberAssignments = new List<MemberAssignment>();
             var config = FindConfig(inType, outType);
-            var baseConfigs = FindBaseConfigs(inType.BaseType(), outType);
+            var baseConfigs = FindInheritedConfigs(inType.BaseType(), outType);
 
             foreach (var p in props)
             {
