@@ -14,17 +14,17 @@ namespace LeanMapper
             MappingFunctions = new Dictionary<string, Expression>();
         }
 
-        public bool ShouldIgnore(string propertyName)
+        internal bool ShouldIgnore(string propertyName)
         {
             return Ignored.Contains(propertyName);
         }
 
-        public bool HasMappingForProperty(string propertyName)
+        internal bool HasMappingForProperty(string propertyName)
         {
             return MappingFunctions.ContainsKey(propertyName);
         }
 
-        public Expression GetMapping(string propertyName)
+        internal Expression GetMapping(string propertyName)
         {
             return MappingFunctions[propertyName];
         }

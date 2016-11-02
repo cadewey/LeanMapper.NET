@@ -12,6 +12,9 @@ using System.Reflection.Emit;
 
 namespace LeanMapper
 {
+    /// <summary>
+    /// Provides access to the LeanMapper API
+    /// </summary>
     public static class Mapper
     {
         private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>> _mapperMethodCache;
@@ -23,6 +26,12 @@ namespace LeanMapper
             _mappingConfigs = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>>();
         }
 
+        /// <summary>
+        /// Declare a new custom configuration that maps objects of TSrc onto objects of type TDest.
+        /// </summary>
+        /// <typeparam name="TSrc">The type of the source (in) object</typeparam>
+        /// <typeparam name="TDest">The type of the destination (out) object</typeparam>
+        /// <returns>A new MappingConfig instance for the specified types</returns>
         public static MappingConfig<TSrc, TDest> Config<TSrc, TDest>()
         {
             var config = new MappingConfig<TSrc, TDest>();
@@ -71,6 +80,13 @@ namespace LeanMapper
             return configs;
         }
 
+        /// <summary>
+        /// Map an object of type TIn onto a new object of type TOut.
+        /// </summary>
+        /// <typeparam name="TIn">The type of the source (in) object</typeparam>
+        /// <typeparam name="TOut">The type of the destination (out) object</typeparam>
+        /// <param name="inObj">The object being mapped onto the new TOut instance</param>
+        /// <returns>A new instance of TOut, with values from inObj mapped onto its properties</returns>
         public static TOut Map<TIn, TOut>(TIn inObj)
             where TOut : class, new()
         {
@@ -93,6 +109,14 @@ namespace LeanMapper
             return outObj;
         }
 
+        /// <summary>
+        /// Map a collection of objects of type TIn onto a new collection of TOut objects.
+        /// </summary>
+        /// <typeparam name="TIn">The type of the source (in) object</typeparam>
+        /// <typeparam name="TOut">The type of the destination (out) object</typeparam>
+        /// <param name="inCollection">The collection of objects being mapped onto the new TOut collection</param>
+        /// <returns>A new collection of TOut objects, created by mapping the individual objects of inCollection
+        /// onto new TOut instances.</returns>
         public static IEnumerable<TOut> MapCollection<TIn, TOut>(IEnumerable<TIn> inCollection)
             where TOut : class, new()
         {
