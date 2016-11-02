@@ -1,4 +1,5 @@
 {
+  "title":  "LeanMapper.Net", 
   "version": "1.0.1",
   "authors": [ "Carter Dewey" ],
   "description": "A lightweight, easy to use object mapper for .NET ",
