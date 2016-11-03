@@ -209,7 +209,7 @@ namespace LeanMapper
                 }
                 else if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(p.PropertyType))
                 {
-                    getExpression = DetermineGetExpressionForCollection(p, inProp, inPropertyGet, inType);
+                    getExpression = DetermineGetExpressionForCollection(p, inProp, inPropertyGet);
 
                 }
                 else if (outPropertyType.GetTypeInfo().BaseType == typeof(Enum))
@@ -298,11 +298,11 @@ namespace LeanMapper
             return Expression.MemberInit(ctor, memberAssignments);
         }
 
-        private static Expression DetermineGetExpressionForCollection(PropertyInfo p, PropertyInfo inProp, MethodCallExpression inPropertyGet, Type inType)
+        private static Expression DetermineGetExpressionForCollection(PropertyInfo p, PropertyInfo inProp, MethodCallExpression inPropertyGet)
         {
             var inPropTypeinfo = inProp.PropertyType.GetTypeInfo();
             var inElementType = inProp.PropertyType.GetElementType() ?? inPropTypeinfo.GetGenericArguments().First();
-            var outElementType = p.PropertyType.GetElementType() ?? inPropTypeinfo.GetGenericArguments().First();
+            var outElementType = p.PropertyType.GetElementType() ?? p.PropertyType.GetTypeInfo().GetGenericArguments().First();
             var loopVar = Expression.Variable(typeof(int), "idx");
             var collectionLength = Expression.Variable(typeof(int), "len");
             var sourceCollection = Expression.Variable(inElementType.MakeArrayType(), "src");
