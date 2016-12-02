@@ -8,6 +8,8 @@ namespace LeanMapper
         protected readonly List<string> Ignored;
         protected readonly Dictionary<string, Expression> MappingFunctions;
 
+        protected int depth = Mapper.MaxDepth;
+
         protected MappingConfigBase()
         {
             Ignored = new List<string>();
@@ -27,6 +29,11 @@ namespace LeanMapper
         internal Expression GetMapping(string propertyName)
         {
             return MappingFunctions[propertyName];
+        }
+
+        internal int GetDepth()
+        {
+            return depth;
         }
     }
 }

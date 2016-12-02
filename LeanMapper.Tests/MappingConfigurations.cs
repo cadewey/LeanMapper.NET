@@ -81,6 +81,7 @@ namespace LeanMapper.Tests
 
     #endregion
 
+    [Collection("MainCollection")]
     public class MappingConfigurations
     {
         [Fact]

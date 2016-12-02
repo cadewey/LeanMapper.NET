@@ -2,6 +2,7 @@
 
 namespace LeanMapper.Tests
 {
+    [Collection("MainCollection")]
     public class MappingEntityWithOnlyPrimitives
     {
         #region Classes
