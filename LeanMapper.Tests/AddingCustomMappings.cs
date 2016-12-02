@@ -4,6 +4,7 @@ using Xunit;
 
 namespace LeanMapper.Tests
 {
+    [Collection("MainCollection")]
     public class AddingCustomMappings
     {
         [Fact]

@@ -62,5 +62,11 @@ namespace LeanMapper
 
             return propertyName;
         }
+
+        public MappingConfig<TSrc, TDest> SetDepth(int newDepth)
+        {
+            this.depth = newDepth;
+            return this;
+        }
     }
 }

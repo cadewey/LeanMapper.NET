@@ -17,11 +17,21 @@ namespace LeanMapper
     /// </summary>
     public static class Mapper
     {
-        private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>> _mapperMethodCache;
-        private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>> _mappingConfigs;
+        private const int DefaultMaxDepth = 10;
+        private static ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>> _mapperMethodCache;
+        private static ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>> _mappingConfigs;
+
+        public static int MaxDepth { get; set; } = DefaultMaxDepth;
 
         static Mapper()
         {
+            _mapperMethodCache = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>>();
+            _mappingConfigs = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>>();
+        }
+
+        public static void Reset()
+        {
+            MaxDepth = DefaultMaxDepth;
             _mapperMethodCache = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, Func<object, object>>>();
             _mappingConfigs = new ConcurrentDictionary<Type, ConcurrentDictionary<Type, MappingConfigBase>>();
         }
@@ -255,14 +265,27 @@ namespace LeanMapper
             return Expression.Condition(nullCheck, initBlock, Expression.Constant(null, outType));
         }
 
+        private static int stack = 0;
+        private static int stopDepth = MaxDepth;
+        private static int previousStopDepth = MaxDepth;
+
         private static MemberInitExpression BuildMemberAssignments(Type inType, Type outType, Expression inVariable)
         {
-            var ctor = Expression.New(outType);
-            var props = outType.GetTypeInfo().GetProperties();
-            var memberAssignments = new List<MemberAssignment>();
             var config = FindConfig(inType, outType);
+            if (stack == 0)
+            {
+                previousStopDepth = stopDepth;
+                stopDepth = (config?.GetDepth() ?? MaxDepth);
+            }
+
+            stack++;
+            var ctor = Expression.New(outType);
+            var memberAssignments = new List<MemberAssignment>();
+            var props = outType.GetTypeInfo().GetProperties();
             var baseConfigs = FindInheritedConfigs(inType, outType);
 
+            if (stack <= stopDepth)
+            {
             foreach (var p in props)
             {
                 MemberAssignment outValueAssign = null;
@@ -294,7 +317,13 @@ namespace LeanMapper
 
                 memberAssignments.Add(outValueAssign);
             }
+            }
 
+            stack--;
+            if (stack == 0)
+            {
+                stopDepth = previousStopDepth;
+            }
             return Expression.MemberInit(ctor, memberAssignments);
         }
 
@@ -311,9 +340,18 @@ namespace LeanMapper
             var initAssign = Expression.Assign(loopVar, Expression.Constant(0, typeof(int)));
             var increment = Expression.PostIncrementAssign(loopVar);
 
-            var getLen = (inPropTypeinfo.GetProperty("Length") != null)
-                ? Expression.Call(inPropertyGet, inPropTypeinfo.GetProperty("Length").GetGetMethod())
-                : Expression.Call(inPropertyGet, inPropTypeinfo.GetProperty("Count").GetGetMethod());
+            var propInfos = GetPublicProperties(inProp.PropertyType);
+
+            var lengthPropInfo = inPropTypeinfo.GetProperty("Length");
+            var countPropInfo = inPropTypeinfo.GetProperty("Count");
+            var lengthMethodInfo = lengthPropInfo?.GetGetMethod();
+            var countMethodInfo = countPropInfo?.GetGetMethod();
+
+            var getLen = (lengthMethodInfo != null)
+                ? Expression.Call(inPropertyGet, lengthMethodInfo)
+                : (countMethodInfo != null)
+                    ? Expression.Call(inPropertyGet, countMethodInfo)
+                    : Expression.Call(inPropertyGet, propInfos.First(x => x.Name == "Length" || x.Name == "Count").GetGetMethod());
 
             var newArr = Expression.NewArrayBounds(outElementType, getLen);
 
@@ -373,5 +411,52 @@ namespace LeanMapper
                 return Expression.Convert(enumConvert, p.PropertyType);
             }
         }
+
+        /// <summary>
+        /// Builds a collection of PropertyInfo for the properties of a type including properties on inherited interfaces
+        /// </summary>
+        /// <param name="type">The Type for which to get properties.</param>
+        /// <returns>An array of PropertyInfo of a type including properties on inherited interfaces</returns>
+        private static PropertyInfo[] GetPublicProperties(this Type type)
+        {
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsInterface)
+            {
+                var propertyInfos = new List<PropertyInfo>();
+
+                var considered = new List<TypeInfo>();
+                var queue = new Queue<TypeInfo>();
+                considered.Add(typeInfo);
+                queue.Enqueue(typeInfo);
+                while (queue.Count > 0)
+                {
+                    var subType = queue.Dequeue();
+                    foreach (var subInterface in subType.GetInterfaces())
+                    {
+                        var subInterfaceTypeInfo = subInterface.GetTypeInfo();
+                        if (considered.Contains(subInterfaceTypeInfo)) continue;
+
+                        considered.Add(subInterfaceTypeInfo);
+                        queue.Enqueue(subInterfaceTypeInfo);
+                    }
+
+                    var typeProperties = subType.GetProperties(
+                        BindingFlags.FlattenHierarchy
+                        | BindingFlags.Public
+                        | BindingFlags.Instance);
+
+                    var newPropertyInfos = typeProperties
+                        .Where(x => !propertyInfos.Contains(x));
+
+                    propertyInfos.InsertRange(0, newPropertyInfos);
+                }
+
+                return propertyInfos.ToArray();
+            }
+
+            return typeInfo.GetProperties(BindingFlags.FlattenHierarchy
+                | BindingFlags.Public | BindingFlags.Instance);
     }
+}
+
 }

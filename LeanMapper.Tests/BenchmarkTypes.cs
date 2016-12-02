@@ -8,6 +8,7 @@ using Xunit;
 
 namespace LeanMapper.Tests
 {
+    [Collection("MainCollection")]
     public class BenchmarkTypes
     {
         #region Object creation
